@@ -1,0 +1,328 @@
+BYPATH
+
+
+
+:root {
+--bg: #090d16;
+--surface: #111827;
+--surface-hover: #1f2937;
+--border: #1e293b;
+--accent: #6366f1;
+--accent-hover: #4f46e5;
+--text: #f8fafc;
+--muted: #94a3b8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+font-family: 'Inter', system-ui, -apple-system, sans-serif;
+background: var(--bg);
+color: var(--text);
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+}
+header {
+position: sticky;
+top: 0;
+z-index: 50;
+background: rgba(9, 13, 22, 0.88);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid var(--border);
+padding: 14px 24px;
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+justify-content: space-between;
+gap: 16px;
+}
+.brand {
+display: flex;
+align-items: center;
+gap: 10px;
+font-size: 1.45rem;
+font-weight: 800;
+letter-spacing: 0.08em;
+color: var(--text);
+}
+.brand span {
+background: linear-gradient(135deg, #6366f1, #a855f7);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+.proxy-bar {
+flex: 1;
+max-width: 580px;
+display: flex;
+gap: 8px;
+}
+.proxy-bar input {
+flex: 1;
+padding: 10px 16px;
+border-radius: 10px;
+border: 1px solid var(--border);
+background: var(--surface);
+color: var(--text);
+font-size: 0.95rem;
+outline: none;
+transition: border-color 0.2s;
+}
+.proxy-bar input:focus { border-color: var(--accent); }
+.btn {
+padding: 10px 18px;
+border-radius: 10px;
+border: none;
+background: var(--accent);
+color: white;
+font-weight: 600;
+cursor: pointer;
+transition: background 0.2s, transform 0.1s;
+}
+.btn:hover { background: var(--accent-hover); }
+.btn:active { transform: scale(0.98); }
+.btn-ghost {
+background: var(--surface);
+border: 1px solid var(--border);
+color: var(--text);
+}
+.btn-ghost:hover { background: var(--surface-hover); }
+.controls {
+max-width: 1400px;
+width: 100%;
+margin: 24px auto 12px;
+padding: 0 24px;
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+justify-content: space-between;
+gap: 16px;
+}
+.search-box {
+width: 100%;
+max-width: 360px;
+}
+.search-box input {
+width: 100%;
+padding: 10px 16px;
+border-radius: 10px;
+border: 1px solid var(--border);
+background: var(--surface);
+color: var(--text);
+font-size: 0.95rem;
+outline: none;
+}
+.search-box input:focus { border-color: var(--accent); }
+.stats {
+color: var(--muted);
+font-size: 0.9rem;
+}
+main {
+max-width: 1400px;
+width: 100%;
+margin: 0 auto;
+padding: 12px 24px 48px;
+flex: 1;
+}
+.grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+gap: 18px;
+}
+.card {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 14px;
+overflow: hidden;
+cursor: pointer;
+transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+display: flex;
+flex-direction: column;
+}
+.card:hover, .card:focus-visible {
+transform: translateY(-4px);
+border-color: var(--accent);
+box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.25);
+outline: none;
+}
+.card img {
+width: 100%;
+aspect-ratio: 4 / 3;
+object-fit: cover;
+background: #1e293b;
+}
+.card-body {
+padding: 12px;
+display: flex;
+flex-direction: column;
+gap: 4px;
+}
+.card-title {
+font-size: 0.95rem;
+font-weight: 600;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.card-tag {
+font-size: 0.75rem;
+color: var(--muted);
+}
+#player-overlay {
+position: fixed;
+inset: 0;
+background: #000;
+z-index: 100;
+display: none;
+flex-direction: column;
+}
+.player-bar {
+background: var(--surface);
+border-bottom: 1px solid var(--border);
+padding: 10px 20px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+#proxy-frame {
+flex: 1;
+width: 100%;
+border: none;
+background: #000;
+}
+.load-more-wrap {
+display: flex;
+justify-content: center;
+margin-top: 32px;
+}
+
+
+⚡ BYPATH
+
+
+Browse
+
+Tab Cloak
+Loading game catalog...
+Load More Games
+
+BYPATH Browser
+
+Fullscreen
+Back to BYPATH
+
+
+
+const { ScramjetController } = $scramjetLoadController();
+const scramjet = new ScramjetController({
+files: {
+wasm: "/scramjet/scramjet.wasm.wasm",
+all: "/scramjet/scramjet.all.js",
+sync: "/scramjet/scramjet.sync.js",
+},
+});
+scramjet.init();
+const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+let proxyReady = false;
+async function ensureProxy() {
+if (proxyReady) return;
+await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+const wispUrl = ${protocol}//${location.host}/wisp/;
+await connection.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl }]);
+proxyReady = true;
+}
+async function launchInProxy(targetUrl, title = "BYPATH Browser") {
+await ensureProxy();
+const encoded = scramjet.encodeUrl(targetUrl);
+document.getElementById("player-title").textContent = title;
+document.getElementById("proxy-frame").src = encoded;
+document.getElementById("player-overlay").style.display = "flex";
+}
+document.getElementById("proxy-form").addEventListener("submit", (e) => {
+e.preventDefault();
+let input = document.getElementById("url-input").value.trim();
+let url;
+if (input.startsWith("http://") || input.startsWith("https://")) {
+url = input;
+} else if (input.includes(".") && !input.includes(" ")) {
+url = "https://" + input;
+} else {
+url = "duckduckgo.com" + encodeURIComponent(input);
+}
+launchInProxy(url, input);
+});
+document.getElementById("close-player").addEventListener("click", () => {
+document.getElementById("player-overlay").style.display = "none";
+document.getElementById("proxy-frame").src = "about:blank";
+});
+document.getElementById("fullscreen-btn").addEventListener("click", () => {
+const frame = document.getElementById("proxy-frame");
+if (frame.requestFullscreen) frame.requestFullscreen();
+});
+document.getElementById("cloak-btn").addEventListener("click", () => {
+document.title = "My Drive - Google Drive";
+let link = document.querySelector("link[rel~='icon']") || document.createElement("link");
+link.rel = "icon";
+link.href = "gstatic.com";
+document.head.appendChild(link);
+alert("Tab cloaked as Google Drive!");
+});
+let allGames = [];
+let filteredGames = [];
+let renderedCount = 0;
+const PAGE_SIZE = 60;
+const grid = document.getElementById("game-grid");
+const countLabel = document.getElementById("game-count");
+const loadMoreBtn = document.getElementById("load-more");
+async function loadGames() {
+try {
+const res = await fetch("gamemonetize.com");
+const data = await res.json();
+allGames = data.map(g => ({
+title: g.title || "Untitled Game",
+url: g.url,
+thumb: g.thumb || "",
+category: g.category || "Arcade"
+}));
+filteredGames = allGames;
+renderBatch(true);
+} catch (err) {
+countLabel.textContent = "Could not load external feed. Use the proxy bar above to browse any site!";
+}
+}
+function renderBatch(reset = false) {
+if (reset) {
+grid.innerHTML = "";
+renderedCount = 0;
+}
+const nextSlice = filteredGames.slice(renderedCount, renderedCount + PAGE_SIZE);
+nextSlice.forEach(game => {
+const card = document.createElement("div");
+card.className = "card";
+card.tabIndex = 0;
+card.setAttribute("role", "button");
+card.setAttribute("aria-label", Play ${game.title});
+card.innerHTML = <img src="${game.thumb}" alt="${game.title}" loading="lazy" /> <div class="card-body"> <div class="card-title">${game.title}</div> <div class="card-tag">${game.category}</div> </div>;
+card.addEventListener("click", () => launchInProxy(game.url, game.title));
+card.addEventListener("keydown", (e) => {
+if (e.key === "Enter" || e.key === " ") {
+e.preventDefault();
+launchInProxy(game.url, game.title);
+}
+});
+grid.appendChild(card);
+});
+renderedCount += nextSlice.length;
+countLabel.textContent = Showing ${renderedCount.toLocaleString()} of ${filteredGames.length.toLocaleString()} games;
+loadMoreBtn.style.display = renderedCount < filteredGames.length ? "inline-block" : "none";
+}
+loadMoreBtn.addEventListener("click", () => renderBatch(false));
+document.getElementById("game-search").addEventListener("input", (e) => {
+const q = e.target.value.toLowerCase().trim();
+filteredGames = allGames.filter(g =>
+g.title.toLowerCase().includes(q) || g.category.toLowerCase().includes(q)
+);
+renderBatch(true);
+});
+
+loadGames();
+
