@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import wisp from "@mercuryworkshop/wisp-js/server";
+import { server as wisp } from "@mercuryworkshop/wisp-js/server";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const server = createServer();
