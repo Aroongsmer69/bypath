@@ -1,4 +1,3 @@
-
 {
 "name": "bypath",
 "version": "1.0.0",
@@ -7,10 +6,10 @@
 "start": "node server.js"
 },
 "dependencies": {
-"@mercuryworkshop/bare-mux": "^2.1.4",
-"@mercuryworkshop/epoxy-transport": "^2.1.26",
-"@mercuryworkshop/scramjet": "2.0.0-alpha",
-"@mercuryworkshop/wisp-js": "^1.1.3",
+"@mercuryworkshop/bare-mux": "latest",
+"@mercuryworkshop/epoxy-transport": "latest",
+"@mercuryworkshop/scramjet": "latest",
+"@mercuryworkshop/wisp-js": "latest",
 "express": "^4.21.1"
 }
 }
