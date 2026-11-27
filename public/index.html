@@ -226,7 +226,7 @@ async function ensureProxy() {
 if (proxyReady) return;
 await navigator.serviceWorker.register("/sw.js", { scope: "/" });
 const protocol = location.protocol === "https:" ? "wss:" : "ws:";
-const wispUrl = ${protocol}//${location.host}/wisp/;
+const wispUrl = protocol + "//" + location.host + "/wisp/";
 await connection.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl }]);
 proxyReady = true;
 }
@@ -300,8 +300,23 @@ const card = document.createElement("div");
 card.className = "card";
 card.tabIndex = 0;
 card.setAttribute("role", "button");
-card.setAttribute("aria-label", Play ${game.title});
-card.innerHTML = <img src="${game.thumb}" alt="${game.title}" loading="lazy" /> <div class="card-body"> <div class="card-title">${game.title}</div> <div class="card-tag">${game.category}</div> </div>;
+card.setAttribute("aria-label", "Play " + game.title);
+const img = document.createElement("img");
+img.src = game.thumb;
+img.alt = game.title;
+img.loading = "lazy";
+const body = document.createElement("div");
+body.className = "card-body";
+const titleEl = document.createElement("div");
+titleEl.className = "card-title";
+titleEl.textContent = game.title;
+const tagEl = document.createElement("div");
+tagEl.className = "card-tag";
+tagEl.textContent = game.category;
+body.appendChild(titleEl);
+body.appendChild(tagEl);
+card.appendChild(img);
+card.appendChild(body);
 card.addEventListener("click", () => launchInProxy(game.url, game.title));
 card.addEventListener("keydown", (e) => {
 if (e.key === "Enter" || e.key === " ") {
@@ -312,7 +327,7 @@ launchInProxy(game.url, game.title);
 grid.appendChild(card);
 });
 renderedCount += nextSlice.length;
-countLabel.textContent = Showing ${renderedCount.toLocaleString()} of ${filteredGames.length.toLocaleString()} games;
+countLabel.textContent = "Showing " + renderedCount.toLocaleString() + " of " + filteredGames.length.toLocaleString() + " games";
 loadMoreBtn.style.display = renderedCount < filteredGames.length ? "inline-block" : "none";
 }
 loadMoreBtn.addEventListener("click", () => renderBatch(false));
@@ -325,4 +340,3 @@ renderBatch(true);
 });
 
 loadGames();
-
